@@ -49,7 +49,7 @@
       border: 1px solid #ccc; 
       border-radius: 5px; 
       box-sizing: border-box; 
-      font-size: 14px;
+      font-size: 14px; 
     }
     button { 
       width: 100%; 
@@ -74,13 +74,12 @@
       color: #166534; 
       border-radius: 5px; 
       text-align: center; 
-      font-size: 14px;
+      font-size: 14px; 
     }
   </style>
 </head>
 <body>
 
-  <!-- Navigation link to Admin Dashboard -->
   <div class="nav-container">
     <a href="dashboard.html" class="nav-link">Go to AICTE Admin Dashboard &rarr;</a>
   </div>
@@ -104,23 +103,44 @@
 
     <button type="button" onclick="handleSubmit()">Submit Complaint</button>
 
-    <div class="alert-box" id="successMsg">
-      Complaint logged! Ticket ID: <strong>#101</strong>
-    </div>
+    <div class="alert-box" id="successMsg"></div>
   </div>
 
   <script>
-    function handleSubmit() {
+    async function handleSubmit() {
       const college = document.getElementById('college').value.trim();
+      const category = document.getElementById('category').value;
       const desc = document.getElementById('desc').value.trim();
+      const msgBox = document.getElementById('successMsg');
 
       if (!college || !desc) {
         alert("Please fill in all fields before submitting.");
         return;
       }
 
-      // Shows confirmation message on screen
-      document.getElementById('successMsg').style.display = 'block';
+      // Sends data straight to Akshaini's laptop over Wi-Fi
+      const backendUrl = "http://192.168.1.228:5000/api/complaints";
+
+      try {
+        const response = await fetch(backendUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ college, category, description: desc })
+        });
+
+        const data = await response.json();
+        
+        msgBox.innerHTML = `Complaint logged! Ticket ID: <strong>#${data.ticket_id || data.id || '101'}</strong>`;
+        msgBox.style.display = 'block';
+
+        // Clear input boxes
+        document.getElementById('college').value = '';
+        document.getElementById('desc').value = '';
+
+      } catch (err) {
+        console.error("Connection error:", err);
+        alert("Could not connect to Akshaini's laptop. Check if node server.js is running and both laptops are on the same Wi-Fi.");
+      }
     }
   </script>
 </body>

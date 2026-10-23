@@ -43,7 +43,7 @@
   <div class="top-bar">
     <div>
       <h1>AICTE Bureau Grievance Monitoring</h1>
-      <p style="color: #64748b; margin: 4px 0 0;">Institutional Grievance Tracker & SLA Analytics</p>
+      <p style="color: #64748b; margin: 4px 0 0;">Live Institutional Grievance Tracker & Analytics</p>
     </div>
     <a href="index.html" style="text-decoration: none; background: #2563eb; color: white; padding: 10px 16px; border-radius: 6px; font-size: 14px; font-weight: bold;">+ New Complaint</a>
   </div>
@@ -52,15 +52,15 @@
   <div class="stats-container">
     <div class="card">
       <h3>Total Complaints</h3>
-      <div class="count text-total" id="totalCount">3</div>
+      <div class="count text-total" id="totalCount">0</div>
     </div>
     <div class="card">
       <h3>Pending Review</h3>
-      <div class="count text-pending" id="pendingCount">2</div>
+      <div class="count text-pending" id="pendingCount">0</div>
     </div>
     <div class="card">
       <h3>Resolved Cases</h3>
-      <div class="count text-resolved" id="resolvedCount">1</div>
+      <div class="count text-resolved" id="resolvedCount">0</div>
     </div>
   </div>
 
@@ -84,44 +84,87 @@
     </thead>
     <tbody id="complaintsTable">
       <tr>
-        <td>#101</td>
-        <td>Apex Engineering Institute</td>
-        <td>Fee Overcharging</td>
-        <td>Excess exam fees charged without official receipt.</td>
-        <td><span class="badge badge-normal">Normal</span></td>
-        <td><span class="badge badge-pending" id="status-101">Pending</span></td>
-        <td><button class="btn-resolve" onclick="markResolved('status-101')">Mark Resolved</button></td>
-      </tr>
-      <tr>
-        <td>#102</td>
-        <td>National Institute of Tech</td>
-        <td>Harassment / Ragging</td>
-        <td>Hostel ragging reported by 1st-year students.</td>
-        <td><span class="badge badge-high">High</span></td>
-        <td><span class="badge badge-pending" id="status-102">Pending</span></td>
-        <td><button class="btn-resolve" onclick="markResolved('status-102')">Mark Resolved</button></td>
-      </tr>
-      <tr>
-        <td>#103</td>
-        <td>City Polytechnic</td>
-        <td>Hostel Facilities</td>
-        <td>Water cooler not functioning for two weeks.</td>
-        <td><span class="badge badge-normal">Normal</span></td>
-        <td><span class="badge badge-resolved">Resolved</span></td>
-        <td>Completed</td>
+        <td colspan="7" style="text-align: center; color: #64748b;">Loading complaints from backend...</td>
       </tr>
     </tbody>
   </table>
 
   <script>
-    function markResolved(elementId) {
-      const badge = document.getElementById(elementId);
-      if (badge.textContent === "Resolved") return;
+    const backendUrl = "http://192.168.1.228:5000/api/complaints";
+
+    async function loadComplaints() {
+      try {
+        const response = await fetch(backendUrl);
+        const complaints = await response.json();
+
+        const tableBody = document.getElementById('complaintsTable');
+        tableBody.innerHTML = '';
+
+        let total = complaints.length;
+        let pending = 0;
+        let resolved = 0;
+
+        complaints.forEach(item => {
+          const isResolved = (item.status || '').toLowerCase() === 'resolved';
+          if (isResolved) resolved++;
+          else pending++;
+
+          const isHarassment = (item.category || '').toLowerCase().includes('ragging') || (item.category || '').toLowerCase().includes('harassment');
+          const priorityBadge = isHarassment 
+            ? '<span class="badge badge-high">High</span>' 
+            : '<span class="badge badge-normal">Normal</span>';
+
+          const statusBadge = isResolved
+            ? '<span class="badge badge-resolved">Resolved</span>'
+            : `<span class="badge badge-pending" id="status-${item.id}">Pending</span>`;
+
+          const actionBtn = isResolved
+            ? '<span style="color: #64748b; font-size: 12px;">Completed</span>'
+            : `<button class="btn-resolve" onclick="markResolved('${item.id}')">Mark Resolved</button>`;
+
+          const row = `
+            <tr>
+              <td><strong>#${item.id}</strong></td>
+              <td>${item.college || 'N/A'}</td>
+              <td>${item.category || 'General'}</td>
+              <td>${item.description || ''}</td>
+              <td>${priorityBadge}</td>
+              <td>${statusBadge}</td>
+              <td id="action-${item.id}">${actionBtn}</td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
+
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('pendingCount').textContent = pending;
+        document.getElementById('resolvedCount').textContent = resolved;
+
+      } catch (err) {
+        console.error("Failed to fetch complaints:", err);
+        document.getElementById('complaintsTable').innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: #ef4444;">
+              Unable to load complaints from ${backendUrl}. Check backend connection.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function markResolved(id) {
+      const statusBadge = document.getElementById(`status-${id}`);
+      const actionCell = document.getElementById(`action-${id}`);
       
-      badge.textContent = "Resolved";
-      badge.className = "badge badge-resolved";
-      
-      // Update counters
+      if (statusBadge) {
+        statusBadge.textContent = "Resolved";
+        statusBadge.className = "badge badge-resolved";
+      }
+      if (actionCell) {
+        actionCell.innerHTML = '<span style="color: #64748b; font-size: 12px;">Completed</span>';
+      }
+
+      // Update counter UI
       let pending = parseInt(document.getElementById('pendingCount').textContent);
       let resolved = parseInt(document.getElementById('resolvedCount').textContent);
       if (pending > 0) {
@@ -138,6 +181,9 @@
         row.style.display = text.includes(filter) ? '' : 'none';
       });
     }
+
+    // Load data automatically when page opens
+    loadComplaints();
   </script>
 </body>
 </html>
