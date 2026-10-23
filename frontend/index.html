@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AICTE Grievance Portal</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f0f2f5; 
+      padding: 40px; 
+      margin: 0; 
+    }
+    .nav-container {
+      max-width: 480px;
+      margin: 0 auto 15px auto;
+      text-align: right;
+    }
+    .nav-link {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .nav-link:hover {
+      text-decoration: underline;
+    }
+    .form-card { 
+      max-width: 480px; 
+      margin: auto; 
+      background: white; 
+      padding: 25px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+    }
+    h2 { 
+      margin-top: 0; 
+      color: #1e3a8a; 
+    }
+    label { 
+      font-weight: bold; 
+      font-size: 14px; 
+      margin-top: 14px; 
+      display: block; 
+    }
+    input, select, textarea { 
+      width: 100%; 
+      padding: 10px; 
+      margin-top: 6px; 
+      border: 1px solid #ccc; 
+      border-radius: 5px; 
+      box-sizing: border-box; 
+      font-size: 14px;
+    }
+    button { 
+      width: 100%; 
+      margin-top: 20px; 
+      padding: 12px; 
+      background: #2563eb; 
+      color: white; 
+      border: none; 
+      border-radius: 5px; 
+      font-size: 16px; 
+      cursor: pointer; 
+      font-weight: bold; 
+    }
+    button:hover { 
+      background: #1d4ed8; 
+    }
+    .alert-box { 
+      display: none; 
+      margin-top: 15px; 
+      padding: 12px; 
+      background: #dcfce7; 
+      color: #166534; 
+      border-radius: 5px; 
+      text-align: center; 
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation link to Admin Dashboard -->
+  <div class="nav-container">
+    <a href="dashboard.html" class="nav-link">Go to AICTE Admin Dashboard &rarr;</a>
+  </div>
+
+  <div class="form-card">
+    <h2>Submit Institution Grievance</h2>
+    
+    <label for="college">Institution / College Name</label>
+    <input type="text" id="college" placeholder="e.g., Thiagarajar College of Engineering" required>
+
+    <label for="category">Category</label>
+    <select id="category">
+      <option value="Fee Issues">Fee Overcharging / Receipt Issues</option>
+      <option value="Hostel/Infrastructure">Hostel & Campus Facilities</option>
+      <option value="Harassment/Ragging">Harassment / Ragging</option>
+      <option value="Academic">Academics & Exams</option>
+    </select>
+
+    <label for="desc">Problem Description</label>
+    <textarea id="desc" rows="4" placeholder="Briefly describe the incident or issue..." required></textarea>
+
+    <button type="button" onclick="handleSubmit()">Submit Complaint</button>
+
+    <div class="alert-box" id="successMsg">
+      Complaint logged! Ticket ID: <strong>#101</strong>
+    </div>
+  </div>
+
+  <script>
+    function handleSubmit() {
+      const college = document.getElementById('college').value.trim();
+      const desc = document.getElementById('desc').value.trim();
+
+      if (!college || !desc) {
+        alert("Please fill in all fields before submitting.");
+        return;
+      }
+
+      // Shows confirmation message on screen
+      document.getElementById('successMsg').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
