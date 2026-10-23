@@ -34,7 +34,7 @@
     .badge-resolved { background: #dcfce7; color: #166534; }
 
     /* Action Button */
-    .btn-resolve { background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+    .btn-resolve { background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
     .btn-resolve:hover { background: #15803d; }
   </style>
 </head>
@@ -69,7 +69,7 @@
     <input type="text" id="searchInput" class="search-input" placeholder="Search by institution name or keyword..." onkeyup="filterTable()">
   </div>
 
-  <!-- Main Complaints Table -->
+  <!-- Complaints Table -->
   <table>
     <thead>
       <tr>
@@ -116,10 +116,10 @@
 
           const statusBadge = isResolved
             ? '<span class="badge badge-resolved">Resolved</span>'
-            : `<span class="badge badge-pending" id="status-${item.id}">Pending</span>`;
+            : '<span class="badge badge-pending">Pending</span>';
 
           const actionBtn = isResolved
-            ? '<span style="color: #64748b; font-size: 12px;">Completed</span>'
+            ? '<span style="color: #64748b; font-size: 12px; font-weight: 500;">Completed</span>'
             : `<button class="btn-resolve" onclick="markResolved('${item.id}')">Mark Resolved</button>`;
 
           const row = `
@@ -130,7 +130,7 @@
               <td>${item.description || ''}</td>
               <td>${priorityBadge}</td>
               <td>${statusBadge}</td>
-              <td id="action-${item.id}">${actionBtn}</td>
+              <td>${actionBtn}</td>
             </tr>
           `;
           tableBody.innerHTML += row;
@@ -145,31 +145,29 @@
         document.getElementById('complaintsTable').innerHTML = `
           <tr>
             <td colspan="7" style="text-align: center; color: #ef4444;">
-              Unable to load complaints from ${backendUrl}. Check backend connection.
+              Unable to load complaints from backend. Verify that Akshaini's server is running on 192.168.1.228:5000.
             </td>
           </tr>
         `;
       }
     }
 
-    function markResolved(id) {
-      const statusBadge = document.getElementById(`status-${id}`);
-      const actionCell = document.getElementById(`action-${id}`);
-      
-      if (statusBadge) {
-        statusBadge.textContent = "Resolved";
-        statusBadge.className = "badge badge-resolved";
-      }
-      if (actionCell) {
-        actionCell.innerHTML = '<span style="color: #64748b; font-size: 12px;">Completed</span>';
-      }
+    async function markResolved(id) {
+      try {
+        const response = await fetch(`${backendUrl}/${id}/resolve`, {
+          method: 'PATCH'
+        });
 
-      // Update counter UI
-      let pending = parseInt(document.getElementById('pendingCount').textContent);
-      let resolved = parseInt(document.getElementById('resolvedCount').textContent);
-      if (pending > 0) {
-        document.getElementById('pendingCount').textContent = pending - 1;
-        document.getElementById('resolvedCount').textContent = resolved + 1;
+        if (!response.ok) {
+          throw new Error('Failed to update status on server');
+        }
+
+        // Refreshes the entire table straight from backend data
+        await loadComplaints();
+
+      } catch (err) {
+        console.error("Resolve error:", err);
+        alert("Could not update status on Akshaini's server. Check connection.");
       }
     }
 
@@ -182,7 +180,7 @@
       });
     }
 
-    // Load data automatically when page opens
+    // Automatically load data when page opens
     loadComplaints();
   </script>
 </body>
