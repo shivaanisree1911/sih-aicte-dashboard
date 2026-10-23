@@ -2,146 +2,105 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AICTE Grievance Portal</title>
+  <title>AICTE Public Grievance Portal</title>
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      background: #f0f2f5; 
-      padding: 40px; 
-      margin: 0; 
-    }
-    .nav-container {
-      max-width: 480px;
-      margin: 0 auto 15px auto;
-      text-align: right;
-    }
-    .nav-link {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 14px;
-    }
-    .nav-link:hover {
-      text-decoration: underline;
-    }
-    .form-card { 
-      max-width: 480px; 
-      margin: auto; 
-      background: white; 
-      padding: 25px; 
-      border-radius: 8px; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-    }
-    h2 { 
-      margin-top: 0; 
-      color: #1e3a8a; 
-    }
-    label { 
-      font-weight: bold; 
-      font-size: 14px; 
-      margin-top: 14px; 
-      display: block; 
-    }
-    input, select, textarea { 
-      width: 100%; 
-      padding: 10px; 
-      margin-top: 6px; 
-      border: 1px solid #ccc; 
-      border-radius: 5px; 
-      box-sizing: border-box; 
-      font-size: 14px; 
-    }
-    button { 
-      width: 100%; 
-      margin-top: 20px; 
-      padding: 12px; 
-      background: #2563eb; 
-      color: white; 
-      border: none; 
-      border-radius: 5px; 
-      font-size: 16px; 
-      cursor: pointer; 
-      font-weight: bold; 
-    }
-    button:hover { 
-      background: #1d4ed8; 
-    }
-    .alert-box { 
-      display: none; 
-      margin-top: 15px; 
-      padding: 12px; 
-      background: #dcfce7; 
-      color: #166534; 
-      border-radius: 5px; 
-      text-align: center; 
-      font-size: 14px; 
-    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
+    .form-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; max-width: 520px; }
+    h2 { margin-top: 0; color: #0f172a; font-size: 22px; }
+    p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+    input[type="text"], select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; ring: 2px solid #93c5fd; }
+    button { width: 100%; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #1d4ed8; }
+    .status-msg { margin-top: 15px; padding: 12px; border-radius: 6px; font-size: 14px; display: none; }
+    .status-msg.success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; display: block; }
+    .status-msg.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; display: block; }
+    .nav-link { display: block; text-align: center; margin-top: 18px; font-size: 13px; color: #2563eb; text-decoration: none; font-weight: 500; }
   </style>
 </head>
 <body>
 
-  <div class="nav-container">
-    <a href="dashboard.html" class="nav-link">Go to AICTE Admin Dashboard &rarr;</a>
-  </div>
-
   <div class="form-card">
-    <h2>Submit Institution Grievance</h2>
-    
-    <label for="college">Institution / College Name</label>
-    <input type="text" id="college" placeholder="e.g., Thiagarajar College of Engineering" required>
+    <h2>Lodge Institutional Grievance</h2>
+    <p>AICTE Centralized Student & Faculty Redressal Portal</p>
 
-    <label for="category">Category</label>
-    <select id="category">
-      <option value="Fee Issues">Fee Overcharging / Receipt Issues</option>
-      <option value="Hostel/Infrastructure">Hostel & Campus Facilities</option>
-      <option value="Harassment/Ragging">Harassment / Ragging</option>
-      <option value="Academic">Academics & Exams</option>
-    </select>
+    <form id="grievanceForm">
+      <div class="form-group">
+        <label for="college">Institution Name</label>
+        <input type="text" id="college" placeholder="e.g., Thiagarajar College of Engineering" required>
+      </div>
 
-    <label for="desc">Problem Description</label>
-    <textarea id="desc" rows="4" placeholder="Briefly describe the incident or issue..." required></textarea>
+      <div class="form-group">
+        <label for="category">Grievance Category</label>
+        <select id="category" required>
+          <option value="Fee Issues">Fee Issues / Overcharging</option>
+          <option value="Hostel/Infrastructure">Hostel & Campus Infrastructure</option>
+          <option value="Academic Irregularity">Academic Irregularity</option>
+          <option value="Harassment/Ragging">Harassment / Ragging (High Priority)</option>
+          <option value="General">Other / General Administration</option>
+        </select>
+      </div>
 
-    <button type="button" onclick="handleSubmit()">Submit Complaint</button>
+      <div class="form-group">
+        <label for="description">Detailed Description</label>
+        <textarea id="description" rows="4" placeholder="Clearly describe the grievance..." required></textarea>
+      </div>
 
-    <div class="alert-box" id="successMsg"></div>
+      <button type="submit" id="submitBtn">Submit Grievance</button>
+    </form>
+
+    <div id="statusMessage" class="status-msg"></div>
+    <a href="dashboard.html" class="nav-link">Go to Admin Monitoring Dashboard &rarr;</a>
   </div>
 
   <script>
-    async function handleSubmit() {
-      const college = document.getElementById('college').value.trim();
-      const category = document.getElementById('category').value;
-      const desc = document.getElementById('desc').value.trim();
-      const msgBox = document.getElementById('successMsg');
+    const backendUrl = "https://sih-aicte-dashboard.onrender.com/api/complaints";
+    const form = document.getElementById('grievanceForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusMsg = document.getElementById('statusMessage');
 
-      if (!college || !desc) {
-        alert("Please fill in all fields before submitting.");
-        return;
-      }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-      // Sends data straight to Akshaini's laptop over Wi-Fi
-      const backendUrl = "http://192.168.1.228:5000/api/complaints";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Registering...";
+      statusMsg.className = "status-msg";
+      statusMsg.style.display = "none";
+
+      const payload = {
+        college: document.getElementById('college').value.trim(),
+        category: document.getElementById('category').value,
+        description: document.getElementById('description').value.trim()
+      };
 
       try {
         const response = await fetch(backendUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ college, category, description: desc })
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
 
         const data = await response.json();
-        
-        msgBox.innerHTML = `Complaint logged! Ticket ID: <strong>#${data.ticket_id || data.id || '101'}</strong>`;
-        msgBox.style.display = 'block';
 
-        // Clear input boxes
-        document.getElementById('college').value = '';
-        document.getElementById('desc').value = '';
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to submit grievance');
+        }
+
+        statusMsg.className = "status-msg success";
+        statusMsg.textContent = `Grievance registered successfully! Ticket ID: #${data.ticket_id}`;
+        form.reset();
 
       } catch (err) {
-        console.error("Connection error:", err);
-        alert("Could not connect to Akshaini's laptop. Check if node server.js is running and both laptops are on the same Wi-Fi.");
+        console.error(err);
+        statusMsg.className = "status-msg error";
+        statusMsg.textContent = "Could not register grievance. The cloud server might be waking up; please try again in 30 seconds.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Grievance";
       }
-    }
+    });
   </script>
 </body>
 </html>

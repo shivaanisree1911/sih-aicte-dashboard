@@ -84,13 +84,13 @@
     </thead>
     <tbody id="complaintsTable">
       <tr>
-        <td colspan="7" style="text-align: center; color: #64748b;">Loading complaints from backend...</td>
+        <td colspan="7" style="text-align: center; color: #64748b;">Loading complaints from live cloud server...</td>
       </tr>
     </tbody>
   </table>
 
   <script>
-    const backendUrl = "http://192.168.1.228:5000/api/complaints";
+    const backendUrl = "https://sih-aicte-dashboard.onrender.com/api/complaints";
 
     async function loadComplaints() {
       try {
@@ -145,7 +145,7 @@
         document.getElementById('complaintsTable').innerHTML = `
           <tr>
             <td colspan="7" style="text-align: center; color: #ef4444;">
-              Unable to load complaints from backend. Verify that Akshaini's server is running on 192.168.1.228:5000.
+              Unable to load complaints from backend. Render free tier servers take ~40 seconds to spin up on first request. Refresh shortly.
             </td>
           </tr>
         `;
@@ -162,12 +162,11 @@
           throw new Error('Failed to update status on server');
         }
 
-        // Refreshes the entire table straight from backend data
         await loadComplaints();
 
       } catch (err) {
         console.error("Resolve error:", err);
-        alert("Could not update status on Akshaini's server. Check connection.");
+        alert("Could not update status on Render server. Please check connection.");
       }
     }
 
@@ -180,7 +179,6 @@
       });
     }
 
-    // Automatically load data when page opens
     loadComplaints();
   </script>
 </body>
