@@ -43,7 +43,7 @@
   <div class="top-bar">
     <div>
       <h1>AICTE Bureau Grievance Monitoring</h1>
-      <p style="color: #64748b; margin: 4px 0 0;">Live Institutional Grievance Tracker & Analytics</p>
+      <p style="color: #64748b; margin: 4px 0 0;">Internal Bureau Grievance Redressal Tracker</p>
     </div>
     <a href="index.html" style="text-decoration: none; background: #2563eb; color: white; padding: 10px 16px; border-radius: 6px; font-size: 14px; font-weight: bold;">+ New Complaint</a>
   </div>
@@ -91,8 +91,29 @@
 
   <script>
     const backendUrl = "https://sih-aicte-dashboard.onrender.com/api/complaints";
+    const ADMIN_PASSCODE = "admin123"; // Change this if you want a different password
+
+    function checkAdminAuth() {
+      let authorized = sessionStorage.getItem("aicte_admin_auth");
+
+      while (!authorized) {
+        const input = prompt("AICTE Internal Bureau Portal\nPlease enter the Admin Passcode:");
+        if (input === null) {
+          window.location.href = "index.html";
+          return false;
+        } else if (input === ADMIN_PASSCODE) {
+          sessionStorage.setItem("aicte_admin_auth", "true");
+          authorized = true;
+        } else {
+          alert("Unauthorized: Incorrect Admin Passcode.");
+        }
+      }
+      return true;
+    }
 
     async function loadComplaints() {
+      if (!checkAdminAuth()) return;
+
       try {
         const response = await fetch(backendUrl);
         const complaints = await response.json();
@@ -145,7 +166,7 @@
         document.getElementById('complaintsTable').innerHTML = `
           <tr>
             <td colspan="7" style="text-align: center; color: #ef4444;">
-              Unable to load complaints from backend. Render free tier servers take ~40 seconds to spin up on first request. Refresh shortly.
+              Unable to load complaints from backend.
             </td>
           </tr>
         `;
